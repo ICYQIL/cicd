@@ -73,7 +73,7 @@ jobs:
     - name: Upload artifact for deployment
       uses: actions/upload-artifact@v4
       with:
-        name: laravel-app
+        name: laravel-rpl2c-kelompok6
         path: |
           .
           !.github/
@@ -92,7 +92,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
-        name: laravel-app
+        name: laravel-rpl2c-kelompok6
         path: ./deploy
 
     - name: Install SSH key
@@ -105,17 +105,17 @@ jobs:
     - name: Deploy to server via SCP/SSH
       run: |
         # Buat direktori sementara di server
-        ssh -o StrictHostKeyChecking=no -p 64000 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/laravel-temp-deploy"
+        ssh -o StrictHostKeyChecking=no -p 64000 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/laravel-rpl2c-kelompok6"
 
         # Upload files ke server
-        scp -o StrictHostKeyChecking=no -P 64000 -r ./deploy/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/laravel-temp-deploy/
+        scp -o StrictHostKeyChecking=no -P 64000 -r ./deploy/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/laravel-rpl2c-kelompok6/
 
         # Jalankan deployment script di server
         ssh -o StrictHostKeyChecking=no -p 64000 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/laravel-temp-deploy
+          cd ~/laravel-rpl2c-kelompok6
 
           # Backup existing deployment (optional)
-          # tar -czf /backup/laravel-backup-$(date +"%Y%m%d%H%M%S").tar.gz /var/www/laravel-app
+          # tar -czf /backup/laravel-backup-$(date +"%Y%m%d%H%M%S").tar.gz /var/www/laravel-rpl2c-kelompok6
 
           # Copy files to production directory
           sudo rsync -avz --delete \
@@ -123,15 +123,15 @@ jobs:
             --exclude='storage' \
             --exclude='.git' \
             --exclude='.github' \
-            ~/laravel-temp-deploy/ /var/www/laravel-app/
+            ~/laravel-rpl2c-kelompok6/ /var/www/laravel-rpl2c-kelompok6/
 
           # Set permissions
-          sudo chown -R www-data:www-data /var/www/laravel-app
-          sudo chmod -R 755 /var/www/laravel-app/storage
-          sudo chmod -R 755 /var/www/laravel-app/bootstrap/cache
+          sudo chown -R www-data:www-data /var/www/laravel-rpl2c-kelompok6
+          sudo chmod -R 755 /var/www/laravel-rpl2c-kelompok6/storage
+          sudo chmod -R 755 /var/www/laravel-rpl2c-kelompok6/bootstrap/cache
 
           # Run deployment commands
-          cd /var/www/laravel-app
+          cd /var/www/laravel-rpl2c-kelompok6
           sudo -u www-data composer install --optimize-autoloader --no-dev
           sudo -u www-data php artisan config:cache
           sudo -u www-data php artisan route:cache
@@ -139,5 +139,5 @@ jobs:
           sudo -u www-data php artisan migrate --force
 
           # Cleanup
-          rm -rf ~/laravel-temp-deploy
+          rm -rf ~/laravel-rpl2c-kelompok6
         EOF
